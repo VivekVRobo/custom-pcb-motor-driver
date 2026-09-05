@@ -1,14 +1,25 @@
 # Custom PCB Motor Driver
 
-[![Engineering Checks](https://github.com/vasu4990/custom-pcb-motor-driver/actions/workflows/checks.yml/badge.svg)](https://github.com/vasu4990/custom-pcb-motor-driver/actions/workflows/checks.yml)
+[![Engineering Checks](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml/badge.svg)](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml)
 
-An engineering-grade reference package for a compact **dual brushed-DC motor driver** for mobile robotics. The project now combines a concrete semiconductor profile, machine-readable electrical decisions, tolerance-aware sizing math, a schematic connectivity contract, BOM traceability, PCB/thermal rules, staged validation gates, and automated repository checks.
+An evidence-driven reference design for a compact **dual brushed-DC motor driver** for mobile robotics, combining electrical decisions, tolerance-aware calculations, BOM traceability, PCB/thermal rules, staged validation gates, and automated engineering checks.
 
 > **Status:** engineering reference, **not a fabricated or bench-validated PCB**. The electrical architecture and reference calculations are defined; real CAD capture, footprint verification, ERC/DRC, fabrication and measured load/thermal results remain required before this can be called hardware-validated.
 
+## Project snapshot
+
+| | |
+|---|---|
+| **Reference device** | TI DRV8848 dual H-bridge |
+| **Target use** | Compact mobile-robot DC motor control |
+| **Engineering model** | Current-limit tolerance, conduction loss, thermal screening, decoupling and interface checks |
+| **Traceability** | Machine-readable design values, BOM, connectivity contract, reference profile and validation gates |
+| **Current maturity** | Engineering reference; no fabricated-board or measured-performance claim |
+| **Next proof milestone** | Real schematic + verified footprints + ERC/DRC + fabrication outputs, followed by first-article bench measurements |
+
 ## Why this repository is different
 
-Instead of leaving the motor-driver IC and key values as placeholders, this repository defines a concrete **TI DRV8848** reference profile while preserving a reusable architecture. Critical assumptions live in YAML/CSV and are checked by code rather than buried only in prose.
+Instead of presenting a schematic screenshot as a “finished PCB,” this repository separates **design intent**, **CAD readiness**, **fabrication readiness**, and **measured hardware validation**. Critical assumptions live in YAML/CSV and are checked by code rather than being buried only in prose.
 
 The repository includes:
 
@@ -153,6 +164,12 @@ The source of truth is [`hardware/design_values.yaml`](hardware/design_values.ya
 **Protection stays application-specific.** Fuse, reverse-polarity device, TVS and optional bulk capacitance cannot be selected credibly without the final battery/source, cable/harness and motor transient behavior. The repo documents the architecture and review criteria instead of inventing part numbers.
 
 **CAD honesty.** The repo does not contain fake KiCad/Altium source files. [`hardware/cad/netlist_spec.yaml`](hardware/cad/netlist_spec.yaml) defines the connectivity contract for the real schematic when CAD work begins.
+
+## Contributing
+
+Contributions are welcome when they improve traceability, calculations, CAD evidence, validation, documentation, or test automation. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
+Real hardware contributions should record board revision, supply, motor/load, instrumentation, ambient conditions and test method so results remain useful to others.
 
 ## Before ordering a PCB
 
