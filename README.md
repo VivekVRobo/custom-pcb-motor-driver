@@ -2,9 +2,9 @@
 
 [![Engineering Checks](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml/badge.svg)](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml)
 
-An evidence-driven reference design for a compact **dual brushed-DC motor driver** for mobile robotics, combining electrical decisions, tolerance-aware calculations, BOM traceability, PCB/thermal rules, staged validation gates, and automated engineering checks.
+An evidence-driven reference design for a compact **dual brushed-DC motor driver** for mobile robotics, combining electrical decisions, tolerance-aware calculations, BOM traceability, KiCad capture scaffolds, PCB/thermal rules, staged validation gates, and automated engineering checks.
 
-> **Status:** engineering reference, **not a fabricated or bench-validated PCB**. The electrical architecture and reference calculations are defined; real CAD capture, footprint verification, ERC/DRC, fabrication and measured load/thermal results remain required before this can be called hardware-validated.
+> **Status:** engineering reference with **KiCad capture in progress**, not a fabricated or bench-validated PCB. The electrical architecture, reference calculations and CAD handoff files are defined; verified schematic capture, footprint review, ERC/DRC, routing, fabrication and measured load/thermal results remain required before this can be called CAD-ready or hardware-validated.
 
 ## Project snapshot
 
@@ -13,13 +13,13 @@ An evidence-driven reference design for a compact **dual brushed-DC motor driver
 | **Reference device** | TI DRV8848 dual H-bridge |
 | **Target use** | Compact mobile-robot DC motor control |
 | **Engineering model** | Current-limit tolerance, conduction loss, thermal screening, decoupling and interface checks |
-| **Traceability** | Machine-readable design values, BOM, connectivity contract, reference profile and validation gates |
-| **Current maturity** | Engineering reference; no fabricated-board or measured-performance claim |
-| **Next proof milestone** | Real schematic + verified footprints + ERC/DRC + fabrication outputs, followed by first-article bench measurements |
+| **Traceability** | Machine-readable design values, BOM, connectivity contract, KiCad capture sources, reference profile and validation gates |
+| **Current maturity** | Engineering reference + CAD capture scaffold; no ERC/DRC/fabricated-board claim |
+| **Next proof milestone** | Complete/verify schematic + footprints in KiCad, pass ERC, finish PCB placement/routing and pass DRC before fabrication outputs |
 
 ## Why this repository is different
 
-Instead of presenting a schematic screenshot as a “finished PCB,” this repository separates **design intent**, **CAD readiness**, **fabrication readiness**, and **measured hardware validation**. Critical assumptions live in YAML/CSV and are checked by code rather than being buried only in prose.
+Instead of presenting a generated schematic or board file as a “finished PCB,” this repository separates **design intent**, **CAD capture**, **CAD readiness**, **fabrication readiness**, and **measured hardware validation**. Critical assumptions live in YAML/CSV and are checked by code rather than being buried only in prose.
 
 The repository includes:
 
@@ -28,11 +28,12 @@ The repository includes:
 - conduction-loss and rough thermal screening
 - traceable engineering BOM with critical-component state
 - machine-readable schematic connectivity contract
+- KiCad project, schematic-capture scaffold and PCB net/outline scaffold
 - documented electrical interfaces and safe states
 - test-point plan for first-article validation
 - PCB layout and PowerPAD/thermal guidance
 - staged `reference` → `cad-ready` → `fab-ready` → `hardware-validated` release gates
-- BOM and netlist linters
+- BOM, netlist and KiCad-source scaffold linters
 - generated Markdown/JSON engineering reports
 - unit-tested calculation tools and CI
 - bring-up, validation, FMEA and manufacturing-release documentation
@@ -45,7 +46,7 @@ The repository includes:
 | Motor channels | 2 brushed DC |
 | Application VM | 6–12.6 V |
 | Expected continuous load | 0.75 A/channel |
-| Current regulation | 0.56 Ω sense resistor/channel, VREF = VINT |
+| Current regulation | 0.56 Ω sense resistor/channel, VREF tied to VINT |
 | Nominal modeled current limit | ~0.893 A/channel |
 | Modeled tolerance range | ~0.838–0.948 A/channel |
 | PWM target | 20 kHz |
@@ -83,17 +84,19 @@ pytest -q
 python tools/design_check.py
 python tools/bom_lint.py
 python tools/netlist_lint.py
+python tools/kicad_source_lint.py
 python tools/generate_report.py
 python tools/release_gate.py reference
 ```
 
-A `fab-ready` gate is expected to fail today:
+Both of these gates are expected to fail today:
 
 ```bash
+python tools/release_gate.py cad-ready
 python tools/release_gate.py fab-ready
 ```
 
-That failure is intentional. It prevents the repository from silently claiming ERC, DRC or Gerber review that has not happened.
+Those failures are intentional. They prevent the presence of generated KiCad source from being mistaken for verified footprints, ERC, DRC or Gerber review.
 
 ## Engineering model
 
@@ -130,7 +133,10 @@ The thermal result uses datasheet θJA as a **screening calculation only**. Actu
 │   ├── test_points.csv
 │   ├── cad/
 │   │   ├── README.md
-│   │   └── netlist_spec.yaml
+│   │   ├── netlist_spec.yaml
+│   │   ├── custom_pcb_motor_driver.kicad_pro
+│   │   ├── custom_pcb_motor_driver.kicad_sch
+│   │   └── custom_pcb_motor_driver.kicad_pcb
 │   └── reference_profiles/drv8848.yaml
 ├── tools/
 │   ├── bom_lint.py
@@ -138,6 +144,7 @@ The thermal result uses datasheet θJA as a **screening calculation only**. Actu
 │   ├── design_check.py
 │   ├── design_model.py
 │   ├── generate_report.py
+│   ├── kicad_source_lint.py
 │   ├── netlist_lint.py
 │   └── release_gate.py
 └── tests/
@@ -148,8 +155,9 @@ The thermal result uses datasheet θJA as a **screening calculation only**. Actu
 | Stage | Current state |
 |---|---|
 | Engineering reference | ✅ |
-| CAD ready | ❌ — real schematic/footprint/ERC evidence missing |
-| Fabrication ready | ❌ — PCB/DRC/Gerber review missing |
+| KiCad capture started | ✅ — native project/schematic/PCB scaffold committed |
+| CAD ready | ❌ — completed schematic, verified footprints and real ERC evidence still missing |
+| Fabrication ready | ❌ — PCB placement/routing, DRC and Gerber review missing |
 | Fabricated | ❌ |
 | Hardware validated | ❌ — no measured motor/thermal/stall data yet |
 
@@ -157,13 +165,13 @@ The source of truth is [`hardware/design_values.yaml`](hardware/design_values.ya
 
 ## Key engineering decisions
 
-**Current regulation.** The reference uses a 0.56 Ω sense resistor per channel with VREF tied to VINT. The model includes VINT and resistor tolerance rather than trusting only a nominal current-limit number.
+**Current regulation.** The reference uses a 0.56 Ω sense resistor per channel with VREF tied to VINT. The connectivity contract models `U1.VINT`, `U1.VREF`, the VINT capacitor and exposed header reference as one physical rail. The model includes VINT and resistor tolerance rather than trusting only a nominal current-limit number.
 
 **Thermal strategy.** The exposed pad, ground plane and thermal vias are part of the electrical design, not optional cosmetics. Rough thermal math is used to catch obviously bad choices early, then real hardware measurements must replace estimates.
 
 **Protection stays application-specific.** Fuse, reverse-polarity device, TVS and optional bulk capacitance cannot be selected credibly without the final battery/source, cable/harness and motor transient behavior. The repo documents the architecture and review criteria instead of inventing part numbers.
 
-**CAD honesty.** The repo does not contain fake KiCad/Altium source files. [`hardware/cad/netlist_spec.yaml`](hardware/cad/netlist_spec.yaml) defines the connectivity contract for the real schematic when CAD work begins.
+**CAD honesty.** KiCad-native source now exists as an explicitly **unvalidated capture scaffold**. [`hardware/cad/netlist_spec.yaml`](hardware/cad/netlist_spec.yaml) remains the authoritative connectivity contract while real symbols, footprints, ERC/DRC and layout evidence are completed. The repository does not turn validation flags green merely because files were generated.
 
 ## Contributing
 
@@ -173,7 +181,7 @@ Real hardware contributions should record board revision, supply, motor/load, in
 
 ## Before ordering a PCB
 
-Complete [`docs/DESIGN_REVIEW_CHECKLIST.md`](docs/DESIGN_REVIEW_CHECKLIST.md), create and independently verify the real CAD files, run ERC/DRC, review fabrication outputs, and satisfy the `fab-ready` gate with actual evidence.
+Complete [`docs/DESIGN_REVIEW_CHECKLIST.md`](docs/DESIGN_REVIEW_CHECKLIST.md), finish and independently verify the real CAD files, run ERC/DRC, review fabrication outputs, and satisfy the `fab-ready` gate with actual evidence.
 
 ## First article
 
