@@ -11,8 +11,7 @@ components:
 nets:
   VM: {endpoints: [J1.VM, U1.VM, C_VM_HF.1, C_VM_LOCAL.1]}
   GND: {endpoints: [J1.GND, U1.GND, U1.PPAD, C_VM_HF.2, C_VM_LOCAL.2, C_VINT.2, R_SENSE_A.2, R_SENSE_B.2, J4.GND]}
-  VINT: {endpoints: [U1.VINT, C_VINT.1]}
-  VREF: {endpoints: [U1.VREF, U1.VINT, J4.VREF]}
+  VINT: {endpoints: [U1.VINT, U1.VREF, C_VINT.1, J4.VREF]}
   AIN1: {endpoints: [U1.AIN1, J4.AIN1]}
   AIN2: {endpoints: [U1.AIN2, J4.AIN2]}
   BIN1: {endpoints: [U1.BIN1, J4.BIN1]}
@@ -27,5 +26,6 @@ nets:
   BOUT1: {endpoints: [U1.BOUT1, J3.1]}
   BOUT2: {endpoints: [U1.BOUT2, J3.2]}
 notes:
+  - "VREF is intentionally tied to the DRV8848 internal VINT rail in this reference profile; J4.VREF exposes that same physical net."
   - "Protection network is intentionally represented as a front-end block until application-specific fuse, reverse-polarity, and TVS parts are selected."
   - "CAD implementation must preserve PowerPAD-to-ground copper and thermal-via requirements."
