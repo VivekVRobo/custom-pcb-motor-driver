@@ -42,10 +42,20 @@ jobs:
         run: python tools/requirements_lint.py
       - name: Lint schematic connectivity contract
         run: python tools/netlist_lint.py
+      - name: Lint KiCad capture scaffolds
+        run: python tools/kicad_source_lint.py
       - name: Generate engineering report
         run: python tools/generate_report.py --output artifacts/design-report.md
       - name: Verify reference release gate
         run: python tools/release_gate.py reference
+      - name: Prove CAD gate still requires actual EDA validation
+        shell: bash
+        run: |
+          if python tools/release_gate.py cad-ready; then
+            echo 'ERROR: cad-ready passed without verified schematic/footprint/ERC evidence'
+            exit 1
+          fi
+          echo 'Expected: cad-ready remains blocked until actual KiCad evidence exists.'
       - name: Prove fabrication gate still requires evidence
         shell: bash
         run: |
