@@ -1,6 +1,6 @@
 project: custom-pcb-motor-driver
-design_revision: rev-a-reference
-status: engineering-reference-unvalidated
+design_revision: rev-a-kicad-capture-draft
+status: cad-capture-draft-unvalidated
 reference_profile: hardware/reference_profiles/drv8848.yaml
 application:
   motor_type: brushed_dc
@@ -38,7 +38,7 @@ pcb:
   ground_plane: required
   exposed_pad_copper: required
 interfaces:
-  control_header: [GND, AIN1, AIN2, BIN1, BIN2, nSLEEP, nFAULT, VREF]
+  control_header: [GND, VLOGIC, AIN1, AIN2, BIN1, BIN2, nSLEEP, nFAULT, VREF]
   power_input: [VM, GND]
   motor_a: [AOUT1, AOUT2]
   motor_b: [BOUT1, BOUT2]
@@ -58,4 +58,5 @@ validation:
   emi_observed: false
 notes:
   - "Values above define the reference design target and are not measured hardware results."
+  - "KiCad capture files may exist in this revision, but CAD validation flags remain false until opened/reviewed in KiCad and ERC/footprint checks are actually completed."
   - "Protection part numbers remain intentionally application-specific until battery chemistry, harness inductance, and motor stall behavior are known."
