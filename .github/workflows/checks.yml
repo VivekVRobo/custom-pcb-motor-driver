@@ -34,6 +34,21 @@ jobs:
           PY
       - name: Run electrical and thermal screening
         run: python tools/design_check.py --output artifacts/design-check.json
+      - name: Generate deterministic datasheet corner sweep
+        run: python tools/corner_sweep.py --output artifacts/corner-sweep.json
+      - name: Validate corner-sweep evidence boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('artifacts/corner-sweep.json').read_text(encoding='utf-8'))
+          assert data['evidence_type'] == 'datasheet_deterministic_corner_sweep'
+          assert data['hardware_evidence'] is False
+          assert data['cad_validation'] is False
+          assert data['case_count'] == 24
+          assert data['all_screening_checks_pass'] is True
+          print('corner-sweep evidence contract: PASS')
+          PY
       - name: Screen example motor profile
         run: python tools/motor_compatibility.py examples/motor_profile_small_gearmotor.yaml
       - name: Lint BOM traceability
