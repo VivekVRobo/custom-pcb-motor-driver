@@ -19,7 +19,7 @@ current_sense:
   vref_source: VINT
   vref_v: 3.3
   resistor_ohm: 0.56
-  resistor_power_rating_w: 1.0
+  resistor_power_rating_w: 1.5
   tolerance_percent: 1.0
 input_power:
   local_ceramic_uf: 22.0
@@ -58,5 +58,6 @@ validation:
   emi_observed: false
 notes:
   - "Values above define the reference design target and are not measured hardware results."
+  - "The sense-resistor power target was raised to 1.5 W so the datasheet VINT range plus 1% resistor tolerance remains comfortably below a 50% screening utilization; final pulse/temperature derating still depends on the selected part."
   - "KiCad capture files may exist in this revision, but CAD validation flags remain false until opened/reviewed in KiCad and ERC/footprint checks are actually completed."
   - "Protection part numbers remain intentionally application-specific until battery chemistry, harness inductance, and motor stall behavior are known."

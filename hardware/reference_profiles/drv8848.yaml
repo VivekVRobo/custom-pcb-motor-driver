@@ -2,7 +2,7 @@ profile: drv8848-dual-dc
 manufacturer: Texas Instruments
 part_number: DRV8848PWPR
 family: DRV8848
-status_checked: 2026-08-18
+status_checked: 2026-09-07
 status: active
 source:
   product_page: https://www.ti.com/product/DRV8848
@@ -70,5 +70,6 @@ protection:
   short_circuit: true
   fault_pin: true
 notes:
+  - "Source profile rechecked against TI product page/datasheet on 2026-09-07; this records source provenance, not hardware validation."
   - "Thermal metrics are package/JEDEC values, not a substitute for board-specific thermal validation."
   - "The reference design uses 1 A RMS per bridge as the top design current; simultaneous operation still requires PCB thermal verification."

@@ -38,8 +38,17 @@ def evaluate(design: dict, profile: dict, ambient_c: float = 25.0) -> dict:
     path85 = hbridge_path_resistance(resistance["high_side_typ_85c_ohm"], resistance["low_side_typ_85c_ohm"])
     active = int(app["simultaneous_channels"])
     expected_i = float(app["expected_continuous_current_a_per_channel"])
-    limit_i = regulated_current_a(float(cs["vref_v"]), float(cs["resistor_ohm"]), float(regulation["sense_gain"]))
-    limit_min_i, limit_max_i = regulated_current_range_a(float(regulation["vint_min_v"]), float(regulation["vint_max_v"]), float(cs["resistor_ohm"]), float(cs["tolerance_percent"]), float(regulation["sense_gain"]))
+    gain = float(regulation["sense_gain"])
+    sense_r = float(cs["resistor_ohm"])
+    sense_rating = float(cs["resistor_power_rating_w"])
+    limit_i = regulated_current_a(float(cs["vref_v"]), sense_r, gain)
+    limit_min_i, limit_max_i = regulated_current_range_a(
+        float(regulation["vint_min_v"]),
+        float(regulation["vint_max_v"]),
+        sense_r,
+        float(cs["tolerance_percent"]),
+        gain,
+    )
     expected_loss25 = conduction_loss_w(expected_i, path25, active)
     top_loss25 = conduction_loss_w(float(app["current_limit_a_per_channel"]), path25, active)
     top_loss85 = conduction_loss_w(float(app["current_limit_a_per_channel"]), path85, active)
@@ -47,8 +56,11 @@ def evaluate(design: dict, profile: dict, ambient_c: float = 25.0) -> dict:
     design_ambient = float(app["ambient_design_max_c"])
     hot_loss_at_limit = conduction_loss_w(limit_max_i, path85, active)
     hot_thermal = thermal_estimate(hot_loss_at_limit, design_ambient, float(thermal["theta_ja_c_per_w"]))
-    sense_power = resistor_dissipation_w(float(app["current_limit_a_per_channel"]), float(cs["resistor_ohm"]))
-    derating = sense_resistor_derating_ratio(sense_power, float(cs["resistor_power_rating_w"]))
+
+    nominal_sense_power = resistor_dissipation_w(limit_i, sense_r)
+    worst_case_sense_power = resistor_dissipation_w(limit_max_i, sense_r)
+    nominal_derating = sense_resistor_derating_ratio(nominal_sense_power, sense_rating)
+    worst_case_derating = sense_resistor_derating_ratio(worst_case_sense_power, sense_rating)
     margin = operating_voltage_margin_percent(float(app["supply_max_v"]), float(supply["operating_max_v"]))
 
     checks = {
@@ -58,15 +70,19 @@ def evaluate(design: dict, profile: dict, ambient_c: float = 25.0) -> dict:
         "nominal_current_limit_within_rms_rating": limit_i <= float(motor["rms_current_per_bridge_a"]),
         "worst_case_current_limit_within_rms_rating": limit_max_i <= float(motor["rms_current_per_bridge_a"]),
         "current_limit_below_ocp_typ": limit_max_i < float(motor["overcurrent_trip_typ_a"]),
-        "sense_resistor_derated_to_50_percent_or_less": derating <= 0.50,
+        "worst_case_sense_resistor_screening_utilization_le_50_percent": worst_case_derating <= 0.50,
         "rough_25c_junction_below_150c": top_thermal25.junction_c < float(thermal["junction_max_operating_c"]),
         "rough_hot_corner_junction_below_150c": hot_thermal.junction_c < float(thermal["junction_max_operating_c"]),
-        "local_vm_cap_meets_datasheet_min": float(design["input_power"]["local_ceramic_uf"]) >= float(profile["external_components"]["vm_bypass_min_uf"]),
+        "local_vm_cap_meets_datasheet_min_nominally": float(design["input_power"]["local_ceramic_uf"]) >= float(profile["external_components"]["vm_bypass_min_uf"]),
+        "high_frequency_vm_bypass_meets_reference": float(design["input_power"]["high_frequency_bypass_uf"]) >= float(profile["external_components"]["vm_bypass_small_uf"]),
     }
 
     return {
         "profile": profile["profile"],
         "design_revision": design["design_revision"],
+        "evidence_type": "datasheet_based_engineering_screening",
+        "hardware_evidence": False,
+        "source": profile.get("source", {}),
         "checks": checks,
         "passed": all(checks.values()),
         "metrics": {
@@ -81,11 +97,17 @@ def evaluate(design: dict, profile: dict, ambient_c: float = 25.0) -> dict:
             "rough_junction_at_limit_ambient_c": ambient_c,
             "rough_junction_at_limit_c": top_thermal25.junction_c,
             "rough_hot_corner_junction_c": hot_thermal.junction_c,
-            "sense_resistor_power_at_limit_w_each": sense_power,
-            "sense_resistor_rating_utilization": derating,
+            "sense_resistor_power_nominal_limit_w_each": nominal_sense_power,
+            "sense_resistor_power_worst_case_limit_w_each": worst_case_sense_power,
+            "sense_resistor_nominal_rating_utilization": nominal_derating,
+            "sense_resistor_worst_case_rating_utilization": worst_case_derating,
             "operating_voltage_headroom_percent": margin,
         },
-        "disclaimer": "Thermal estimate uses a datasheet JEDEC theta-JA metric and is only a screening calculation; validate on the actual PCB.",
+        "disclaimer": (
+            "This is datasheet-based analytical screening, not measured hardware evidence. "
+            "Theta-JA is a JEDEC/package metric and capacitor effective capacitance, resistor pulse capability, "
+            "PCB copper temperature, motor transients and EMI require CAD/part-specific review and physical validation."
+        ),
     }
 
 
