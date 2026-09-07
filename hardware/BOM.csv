@@ -1,9 +1,9 @@
 Reference,Category,Description,Qty,Selection_Status,MPN,Manufacturer,Critical,Notes
 U1,Motor driver,18-V 2-A dual H-bridge motor driver HTSSOP-16,1,Selected,DRV8848PWPR,Texas Instruments,yes,"Reference profile; verify lifecycle again before fabrication"
-R_SENSE_A,Current sense,0.56 ohm 1 W 1% low-inductance resistor,1,Reference,,TBD,yes,"Sets ~0.893 A nominal full-scale current at VREF=3.3 V; select pulse-capable package"
-R_SENSE_B,Current sense,0.56 ohm 1 W 1% low-inductance resistor,1,Reference,,TBD,yes,"Sets ~0.893 A nominal full-scale current at VREF=3.3 V; select pulse-capable package"
+R_SENSE_A,Current sense,0.56 ohm >=1.5 W 1% low-inductance resistor,1,Reference,,TBD,yes,"Sets ~0.893 A nominal full-scale current at VREF=3.3 V; worst-case VINT/tolerance screening is ~0.948 A, so select pulse-capable >=1.5 W package and verify manufacturer derating"
+R_SENSE_B,Current sense,0.56 ohm >=1.5 W 1% low-inductance resistor,1,Reference,,TBD,yes,"Sets ~0.893 A nominal full-scale current at VREF=3.3 V; worst-case VINT/tolerance screening is ~0.948 A, so select pulse-capable >=1.5 W package and verify manufacturer derating"
 C_VM_HF,Decoupling,0.1 uF 25 V X7R ceramic,1,Reference,,TBD,yes,"Place directly at VM/GND loop"
-C_VM_LOCAL,Decoupling,22 uF 25 V X7R ceramic,1,Reference,,TBD,yes,"Exceeds datasheet 10 uF minimum; verify DC-bias derating"
+C_VM_LOCAL,Decoupling,22 uF 25 V X7R ceramic,1,Reference,,TBD,yes,"Exceeds datasheet 10 uF minimum nominally; verify effective capacitance after DC-bias derating"
 C_VINT,Decoupling,2.2 uF >=6.3 V X7R ceramic,1,Reference,,TBD,yes,"Place at VINT"
 R_NFAULT,Logic,10 kOhm nFAULT pull-up,1,Reference,,TBD,no,"Datasheet requires >1 kOhm; pull to logic rail"
 J1,Power connector,Polarized VM/GND input connector,1,Application-specific,,TBD,yes,"Must exceed fused peak current and match harness"
