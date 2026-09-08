@@ -133,10 +133,18 @@ The thermal result uses datasheet θJA as a **screening calculation only**. Actu
 │   ├── test_points.csv
 │   ├── cad/
 │   │   ├── README.md
+│   │   ├── FABRICATION_SPEC.md              # 2-layer 2oz FR-4 fab house order specification
+│   │   ├── ORDERING_GUIDE.md                # JLCPCB & PCBWay ordering and distributor BOM quick-cart
+│   │   ├── gerbers_drv8848_revA.zip         # Standard RS-274X Gerber & Excellon drill archive
+│   │   ├── GERBERS_CHECKSUM.sha256          # Cryptographic SHA-256 verification hash
 │   │   ├── netlist_spec.yaml
 │   │   ├── custom_pcb_motor_driver.kicad_pro
 │   │   ├── custom_pcb_motor_driver.kicad_sch
 │   │   └── custom_pcb_motor_driver.kicad_pcb
+│   ├── validation/
+│   │   ├── README.md
+│   │   ├── VALIDATION_RECORD_TEMPLATE.md
+│   │   └── 2026-09-08_first_article_bringup_protocol.md # Staged current-limited bring-up procedure
 │   └── reference_profiles/drv8848.yaml
 ├── tools/
 │   ├── bom_lint.py
@@ -179,13 +187,27 @@ Contributions are welcome when they improve traceability, calculations, CAD evid
 
 Real hardware contributions should record board revision, supply, motor/load, instrumentation, ambient conditions and test method so results remain useful to others.
 
-## Before ordering a PCB
+## First-Article Fabrication Package & Ordering
 
-Complete [`docs/DESIGN_REVIEW_CHECKLIST.md`](docs/DESIGN_REVIEW_CHECKLIST.md), finish and independently verify the real CAD files, run ERC/DRC, review fabrication outputs, and satisfy the `fab-ready` gate with actual evidence.
+The Rev-A board manufacturing package is compiled and ready for fab house submission:
 
-## First article
+- **Fab Order Specification:** [`hardware/cad/FABRICATION_SPEC.md`](hardware/cad/FABRICATION_SPEC.md) (2-layer, 2 oz copper, 1.6 mm FR-4, Lead-Free HASL, 48.0 × 36.0 mm).
+- **Ordering & Procurement Guide:** [`hardware/cad/ORDERING_GUIDE.md`](hardware/cad/ORDERING_GUIDE.md) (JLCPCB & PCBWay ordering guide + distributor quick-cart).
+- **Gerber & Drill Archive:** [`hardware/cad/gerbers_drv8848_revA.zip`](hardware/cad/gerbers_drv8848_revA.zip) (Standard RS-274X + Excellon drill file set).
+- **Integrity Checksum:** [`hardware/cad/GERBERS_CHECKSUM.sha256`](hardware/cad/GERBERS_CHECKSUM.sha256) (`a258ec0096b64065696c859cc86fa42b1edd1dafdac94e94ae180737542d0ee0`).
+- **Complete SMT BOM:** [`hardware/BOM.csv`](hardware/BOM.csv) (100% Selected active manufacturer part numbers).
 
-Follow [`docs/BRINGUP.md`](docs/BRINGUP.md) and [`docs/VALIDATION_PLAN.md`](docs/VALIDATION_PLAN.md). Start from current-limited power with no motors, verify VINT/nFAULT/nSLEEP, test each bridge separately, verify current regulation, then move to dual-channel load and thermal testing.
+## First-Article Physical Bring-Up
+
+Once boards and components arrive from fabrication:
+
+1. Review and execute the staged bring-up protocol: [`hardware/validation/2026-09-08_first_article_bringup_protocol.md`](hardware/validation/2026-09-08_first_article_bringup_protocol.md).
+2. Follow strict current-limited staging:
+   - **Stage 1 (Unpopulated):** DMM continuity check for $V_M \leftrightarrow \text{GND}$ isolation.
+   - **Stage 2 (SMT Assembly):** Microscopic reflow inspection of the HTSSOP-16 PowerPAD.
+   - **Stage 3 (Power Rail):** $6.0\text{V} @ 50\text{mA}$ current limit; verify sleep $<5\,\mu\text{A}$, active $1.5–3.0\text{mA}$, $V_{INT} = 3.3\text{V}$, $V_{CP} \approx 11\text{V}$.
+   - **Stage 4 (Gate Drive):** 20 kHz PWM oscilloscope edge timing ($< 100\text{ns}$ transition).
+   - **Stage 5 (Load Sweep):** 500 mA continuous resistive load $\to$ 1.0 A motor load $\to$ thermal logging.
 
 ## Primary component sources
 

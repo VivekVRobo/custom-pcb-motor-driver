@@ -6,8 +6,8 @@ venv/
 artifacts/
 *.log
 .DS_Store
-Thumbs.db
 *.zip
+!hardware/cad/*.zip
 # CAD-generated backups / autosaves
 *-backups/
 *.lck
