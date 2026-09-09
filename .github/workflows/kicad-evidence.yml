@@ -2,12 +2,20 @@ name: KiCad Evidence Probe
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/kicad-evidence.yml'
+      - 'hardware/cad/**'
+      - 'hardware/design_values.yaml'
+      - 'tools/release_gate.py'
+      - 'tools/kicad_source_lint.py'
   pull_request:
     paths:
       - '.github/workflows/kicad-evidence.yml'
       - 'hardware/cad/**'
       - 'hardware/design_values.yaml'
       - 'tools/release_gate.py'
+      - 'tools/kicad_source_lint.py'
 
 permissions:
   contents: read
@@ -67,6 +75,9 @@ jobs:
             echo 'CAD-ready still requires completed schematic capture, verified footprints, and reviewed clean ERC evidence.'
             echo 'Fab-ready additionally requires completed layout, clean reviewed DRC, and reviewed Gerbers/drills.'
           } > artifacts/kicad/status.txt
+
+      - name: Enforce source/documentation maturity consistency
+        run: python tools/kicad_source_lint.py
 
       - name: Preserve current release truth gates
         shell: bash
