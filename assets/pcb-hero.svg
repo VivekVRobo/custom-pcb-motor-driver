@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="t d">
+<title id="t">Custom PCB Motor Driver — DRV8848 Dual H Bridge Reference Design</title>
+<desc id="d">A traceable dual brushed DC motor driver reference design with current limit modelling, KiCad sources, preliminary Rev A manufacturing outputs, and explicit CAD fabrication and hardware validation gates.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F4F0E8"/><stop offset="1" stop-color="#E6ECEF"/></linearGradient><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#6F90A8" stroke-opacity=".09"/></pattern><filter id="s"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#132436" flood-opacity=".10"/></filter></defs>
+<rect width="1200" height="430" rx="28" fill="url(#bg)"/><rect width="1200" height="430" rx="28" fill="url(#grid)"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="58" y="62" font-size="15" font-weight="700" letter-spacing="3.1" fill="#647985">ELECTRICAL DESIGN · KICAD · THERMAL · MANUFACTURING GATES</text>
+<text x="58" y="119" font-size="46" font-weight="800" fill="#132436">Custom PCB Motor Driver</text>
+<text x="58" y="155" font-size="22" font-weight="650" fill="#395260">DRV8848 dual brushed DC motor control for mobile robotics</text>
+<text x="58" y="210" font-size="18.5" fill="#425866">Tolerance aware current limiting, thermal screening, BOM traceability,</text>
+<text x="58" y="238" font-size="18.5" fill="#425866">KiCad capture, preliminary Rev A Gerbers, and staged release gates.</text>
+<g transform="translate(58 286)">
+<rect width="146" height="42" rx="12" fill="#fff" fill-opacity=".66" stroke="#B3C3CA"/><text x="73" y="27" text-anchor="middle" font-size="13.5" font-weight="700" fill="#284252">6–12.6 V</text>
+<rect x="160" width="168" height="42" rx="12" fill="#fff" fill-opacity=".66" stroke="#B3C3CA"/><text x="244" y="27" text-anchor="middle" font-size="13.5" font-weight="700" fill="#284252">2 × DC CHANNELS</text>
+<rect x="342" width="166" height="42" rx="12" fill="#fff" fill-opacity=".66" stroke="#B3C3CA"/><text x="425" y="27" text-anchor="middle" font-size="13.5" font-weight="700" fill="#284252">20 kHz PWM</text>
+</g>
+<g transform="translate(58 354)"><rect width="510" height="48" rx="14" fill="#263D49"/><circle cx="25" cy="24" r="7" fill="#C9965B"/><text x="45" y="30" font-size="13.5" font-weight="700" fill="#F4F0E8">PRELIMINARY REV A · CAD / FAB / HARDWARE GATES PENDING</text></g>
+<g transform="translate(650 42)" filter="url(#s)">
+<rect width="492" height="346" rx="22" fill="#fff" fill-opacity=".68" stroke="#B4C4CB"/>
+<rect x="142" y="93" width="208" height="154" rx="18" fill="#2E4955" stroke="#78909A" stroke-width="3"/>
+<text x="246" y="146" text-anchor="middle" font-size="21" font-weight="800" fill="#F4F0E8">DRV8848</text>
+<text x="246" y="171" text-anchor="middle" font-size="12" fill="#D4E0E4">DUAL H BRIDGE</text>
+<text x="246" y="197" text-anchor="middle" font-size="12" fill="#D4E0E4">CURRENT LIMIT · nFAULT · nSLEEP</text>
+<circle cx="246" cy="222" r="5" fill="#C9965B"/>
+<g stroke="#6E8A97" stroke-width="3" fill="none" stroke-linecap="round">
+<path d="M142 125H82V77H38"/><path d="M142 165H66"/><path d="M142 205H82V265H38"/>
+<path d="M350 125H410V77H456"/><path d="M350 205H410V265H456"/>
+</g>
+<g fill="#6E8A97"><circle cx="38" cy="77" r="5"/><circle cx="66" cy="165" r="5"/><circle cx="38" cy="265" r="5"/><circle cx="456" cy="77" r="5"/><circle cx="456" cy="265" r="5"/></g>
+<text x="38" y="59" text-anchor="middle" font-size="11.5" font-weight="700" fill="#607582">VM</text>
+<text x="66" y="151" text-anchor="middle" font-size="11.5" font-weight="700" fill="#607582">MCU</text>
+<text x="38" y="289" text-anchor="middle" font-size="11.5" font-weight="700" fill="#607582">SENSE</text>
+<text x="456" y="59" text-anchor="middle" font-size="11.5" font-weight="700" fill="#607582">MOTOR A</text>
+<text x="456" y="289" text-anchor="middle" font-size="11.5" font-weight="700" fill="#607582">MOTOR B</text>
+<g stroke="#B78555" stroke-width="1.8" fill="none" opacity=".78">
+<path d="M99 300H146V276H194V310H246V272H300V306H350V280H401"/>
+<path d="M95 45H139V69H181V44H218"/><path d="M274 44H318V69H360V45H407"/>
+</g>
+<g transform="translate(60 314)">
+<text x="0" y="0" font-size="11" font-weight="700" fill="#607582">REFERENCE TARGET</text>
+<text x="145" y="0" font-size="11" font-weight="700" fill="#607582">I LIMIT ≈ 0.893 A / CH</text>
+<text x="335" y="0" font-size="11" font-weight="700" fill="#607582">NOT MEASURED HARDWARE</text>
+</g>
+</g>
+</g></svg>
