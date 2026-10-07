@@ -1,30 +1,104 @@
-# Custom PCB Motor Driver
+<p align="center">
+  <img src="./assets/pcb-hero.svg" alt="Custom PCB Motor Driver | DRV8848 Dual H Bridge Reference Design" width="100%" />
+</p>
 
-[![Engineering Checks](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml/badge.svg)](https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml)
+<p align="center">
+  <a href="https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml"><img src="https://github.com/VivekVRobo/custom-pcb-motor-driver/actions/workflows/checks.yml/badge.svg" alt="Engineering checks"></a>
+  <img src="https://img.shields.io/badge/DRV8848-Dual_H_Bridge-425866?style=flat-square" alt="DRV8848">
+  <img src="https://img.shields.io/badge/KiCad-425866?style=flat-square&logo=kicad&logoColor=white" alt="KiCad">
+  <img src="https://img.shields.io/badge/Rev_A-Preliminary-C9965B?style=flat-square" alt="Preliminary Rev A">
+  <img src="https://img.shields.io/badge/Fabricated-No-6E6256?style=flat-square" alt="Not fabricated">
+</p>
 
-A traceable reference design for a compact **dual brushed-DC motor driver** for mobile robotics based on the TI DRV8848. The repository combines electrical sizing, tolerance-aware calculations, KiCad sources, BOM traceability, PCB/thermal rules, staged validation gates, and automated engineering checks.
+<p align="center">
+  <strong>A traceable dual brushed DC motor driver reference design that separates electrical intent, CAD capture, manufacturing release, fabrication, and measured hardware validation.</strong>
+</p>
 
-> **Current status:** engineering reference with a **preliminary Rev-A CAD/fabrication package generated, but not released as fabrication-ready hardware**. Native KiCad source, BOM, Gerbers and ordering documentation exist, but verified schematic/footprint review, recorded ERC/DRC evidence, final manufacturing review, fabrication, and bench measurements are still required before the board can be called `fab-ready` or `hardware-validated`.
+> [!IMPORTANT]
+> **Current state:** preliminary Rev A KiCad sources and manufacturing outputs exist, but the board is **not fab ready and not hardware validated**. Recorded schematic review, footprint verification, ERC/DRC evidence, final manufacturing review, fabrication, assembly, and bench measurements remain required.
 
-## Recruiter quick scan
+<p align="center">
+  <a href="docs/ELECTRICAL_DESIGN.md"><strong>Electrical Design</strong></a> ·
+  <a href="docs/PCB_LAYOUT_RULES.md"><strong>PCB Rules</strong></a> ·
+  <a href="docs/THERMAL_DESIGN.md"><strong>Thermal</strong></a> ·
+  <a href="docs/MANUFACTURING_RELEASE.md"><strong>Manufacturing Gate</strong></a> ·
+  <a href="docs/VALIDATION_PLAN.md"><strong>Validation Plan</strong></a>
+</p>
 
-| Area | Current state |
+---
+
+## Design State
+
+| Stage | Evidence | Status |
+| --- | --- | :---: |
+| **Engineering reference** | Electrical model, requirements, design rules | ✅ |
+| **Native KiCad sources** | Project, schematic, PCB files | ✅ Present |
+| **BOM and traceability** | BOM, reference profile, design values | ✅ Present |
+| **Preliminary Rev A outputs** | Gerbers, drill files, checksum, ordering notes | ✅ Candidate |
+| **CAD review** | Schematic, footprints, ERC and DRC evidence | ◐ Pending |
+| **Fabrication release** | Reviewed immutable manufacturing package | ◐ Pending |
+| **Fabricated board** | Physical first article | ❌ No |
+| **Bench power up** | Rail and fault measurements | ❌ No |
+| **Motor load validation** | Current, drive, stall measurements | ❌ No |
+| **Thermal validation** | Measured board temperature under documented load | ❌ No |
+
+A generated Gerber archive is not treated as evidence that the board has passed fabrication review.
+
+---
+
+## Electrical Architecture
+
+```mermaid
+flowchart LR
+    SRC[6 to 12.6 V source] --> P[Protection front end]
+    P --> C[Local + bulk decoupling]
+    C --> D[DRV8848 dual H bridge]
+
+    MCU[MCU] -->|AIN1 AIN2 BIN1 BIN2| D
+    MCU -->|nSLEEP| D
+    D -->|nFAULT| MCU
+
+    D --> A[Motor A]
+    D --> B[Motor B]
+    D --> SA[Sense A]
+    D --> SB[Sense B]
+```
+
+The design target is a compact two channel brushed DC motor driver for mobile robotics.
+
+---
+
+## Reference Targets
+
+| Item | Reference target |
 | --- | --- |
-| Motor driver | TI DRV8848 dual H-bridge |
-| Target use | Compact mobile-robot DC motor control |
-| Electrical model | Current-limit tolerance, conduction loss, thermal screening, decoupling and interface checks |
-| CAD | KiCad project/schematic/PCB sources present |
-| Manufacturing outputs | Preliminary Rev-A Gerber/drill archive and fabrication notes generated |
-| Automated evidence | BOM/netlist/KiCad-source checks + unit-tested calculations + CI |
-| Fabricated board | **No** |
-| Bench validation | **No** |
+| Driver | TI DRV8848PWPR |
+| Channels | 2 brushed DC motors |
+| VM range | 6 to 12.6 V |
+| Logic voltage | 3.3 V |
+| Expected continuous load | 0.75 A per channel |
+| Sense resistor | 0.56 Ω per channel |
+| Nominal modeled current limit | ~0.893 A per channel |
+| Modeled tolerance range | ~0.838 to 0.948 A per channel |
+| PWM target | 20 kHz |
+| Local VM capacitance | 0.1 µF + 22 µF / 25 V |
+| VINT bypass | 2.2 µF |
+| Reference PCB | 2 layer, 2 oz copper |
+| Power trace target | minimum 1.5 mm |
+| Exposed pad thermal vias | 9 |
 
-## Why this project exists
+These are engineering targets from the design model, not measured hardware specifications.
 
-The goal is not to present generated PCB files as finished hardware. The repository deliberately separates:
+---
+
+## Why This Repository Exists
+
+The project deliberately keeps these stages separate:
 
 ```text
 design intent
+    ↓
+electrical modelling
     ↓
 CAD capture
     ↓
@@ -32,52 +106,45 @@ CAD verification
     ↓
 fabrication release
     ↓
-physical bring-up
+physical bring up
     ↓
 measured hardware validation
 ```
 
-That distinction matters because a schematic file or Gerber archive is not proof that a board has passed electrical review, DRC, fabrication, assembly, or load testing.
+That prevents schematic files or manufacturing outputs from being presented as if a physical board had already passed bench testing.
 
-## Reference design targets
+---
 
-| Item | Reference target |
-| --- | --- |
-| Device | TI DRV8848PWPR |
-| Channels | 2 brushed DC motors |
-| Application VM | 6–12.6 V |
-| Expected continuous load | 0.75 A/channel |
-| Sense resistor | 0.56 Ω/channel |
-| Nominal modeled current limit | ~0.893 A/channel |
-| Modeled tolerance range | ~0.838–0.948 A/channel |
-| PWM target | 20 kHz |
-| VM local decoupling | 0.1 µF + 22 µF / 25 V |
-| VINT bypass | 2.2 µF |
-| Reference PCB | 2-layer, 2 oz copper, ground plane, exposed-pad thermal vias |
+## Engineering Decisions
 
-These values are **engineering targets**, not measured hardware specifications.
+### Current limiting
 
-## Architecture
+The reference uses a **0.56 Ω sense resistor per channel** and models component tolerance instead of relying only on a nominal current limit.
 
-```mermaid
-flowchart LR
-    SRC[Battery / DC source] --> P[Protection front end]
-    P --> C[Local + bulk decoupling]
-    C --> D[DRV8848 dual H-bridge]
-    MCU[MCU] -->|AIN1/AIN2/BIN1/BIN2| D
-    MCU -->|nSLEEP| D
-    D -->|nFAULT| MCU
-    D --> A[Motor A]
-    D --> B[Motor B]
-    D --> SA[Sense A]
-    D --> SB[Sense B]
-```
+### Thermal strategy
 
-## Automated checks
+The exposed PowerPAD, copper area, ground plane, and thermal vias are treated as functional electrical and thermal design elements.
+
+Datasheet thermal values are used for screening only. Final temperature must be measured on real hardware.
+
+### Protection
+
+Fuse strategy, reverse polarity protection, TVS selection, and bulk capacitance remain application dependent because they depend on battery chemistry, harness inductance, and motor transient behavior.
+
+### Evidence boundary
+
+Calculations, CAD, and preliminary Gerbers stay separate from fabricated and measured hardware evidence.
+
+---
+
+## Automated Engineering Checks
+
+Install development requirements and run:
 
 ```bash
 python -m pip install -r requirements-dev.txt
 pytest -q
+
 python tools/design_check.py
 python tools/bom_lint.py
 python tools/netlist_lint.py
@@ -86,64 +153,53 @@ python tools/generate_report.py
 python tools/release_gate.py reference
 ```
 
-The higher release gates are intentionally evidence-driven. They should remain red until their required verification artifacts exist.
+Higher gates remain intentionally red until their required evidence exists:
 
 ```bash
 python tools/release_gate.py cad-ready
 python tools/release_gate.py fab-ready
 ```
 
-A generated file alone is not enough to turn either gate green.
+A file existing in the repository is not enough to turn a release gate green.
 
-## Release truth table
+---
 
-| Stage | Current state |
-| --- | --- |
-| Engineering reference | ✅ |
-| Native KiCad sources present | ✅ |
-| Preliminary manufacturing outputs generated | ✅ |
-| CAD verified | ❌ recorded schematic/footprint/ERC/DRC review still required |
-| Fabrication ready | ❌ final manufacturing-release review still required |
-| Fabricated | ❌ |
-| Hardware validated | ❌ no measured motor/current/thermal/stall data yet |
+## Preliminary Rev A Package
 
-## Preliminary Rev-A manufacturing package
+Candidate review artifacts include:
 
-The repository contains a **candidate** Rev-A manufacturing package for review:
+* [Fabrication specification](hardware/cad/FABRICATION_SPEC.md)
+* [Ordering guide](hardware/cad/ORDERING_GUIDE.md)
+* [Gerber and drill archive](hardware/cad/gerbers_drv8848_revA.zip)
+* [Gerber checksum](hardware/cad/GERBERS_CHECKSUM.sha256)
+* [BOM](hardware/BOM.csv)
+* [Native KiCad project](hardware/cad/custom_pcb_motor_driver.kicad_pro)
+* [Native schematic](hardware/cad/custom_pcb_motor_driver.kicad_sch)
+* [Native PCB](hardware/cad/custom_pcb_motor_driver.kicad_pcb)
 
-- [`hardware/cad/FABRICATION_SPEC.md`](hardware/cad/FABRICATION_SPEC.md)
-- [`hardware/cad/ORDERING_GUIDE.md`](hardware/cad/ORDERING_GUIDE.md)
-- [`hardware/cad/gerbers_drv8848_revA.zip`](hardware/cad/gerbers_drv8848_revA.zip)
-- [`hardware/cad/GERBERS_CHECKSUM.sha256`](hardware/cad/GERBERS_CHECKSUM.sha256)
-- [`hardware/BOM.csv`](hardware/BOM.csv)
+These are review artifacts, not a fabrication approval.
 
-These files are useful review artifacts, but their presence does **not** by itself constitute a fabrication release. The `fab-ready` claim is reserved for a verified package that has passed the repository's release gate and final human review.
+---
 
-## First-article bring-up plan
+## First Article Validation Path
 
-After a verified fabrication release and physical board assembly, the first article should be validated in stages:
+After CAD and manufacturing release gates genuinely pass:
 
-1. unpopulated continuity/isolation checks;
-2. assembly inspection, especially the exposed PowerPAD;
-3. current-limited power-up and rail checks;
-4. PWM/drive waveform verification;
-5. controlled resistive/motor load sweep;
-6. current-limit and fault behavior checks;
-7. thermal measurements under a documented load and ambient condition.
+1. inspect an unpopulated board for continuity and isolation
+2. inspect assembly, polarity, exposed pad, and connector orientation
+3. power up under a current limited supply
+4. verify rails and logic behavior
+5. measure drive and PWM waveforms
+6. run controlled motor or resistive load sweeps
+7. test current limiting and fault behavior
+8. record temperature under a documented load and ambient condition
+9. test stall behavior within a safe controlled setup
 
-The detailed procedure lives in [`hardware/validation/2026-09-08_first_article_bringup_protocol.md`](hardware/validation/2026-09-08_first_article_bringup_protocol.md).
+[**First article protocol →**](hardware/validation/2026-09-08_first_article_bringup_protocol.md)
 
-## Engineering decisions
+---
 
-**Current regulation.** The reference uses a 0.56 Ω sense resistor per channel and models component tolerance rather than relying only on a nominal current-limit value.
-
-**Thermal strategy.** Exposed-pad soldering, copper area, ground plane and thermal vias are treated as functional design elements. Datasheet thermal resistance is used only for early screening; real board temperature must ultimately be measured.
-
-**Protection.** Final fuse, reverse-polarity protection, TVS and bulk capacitance depend on the actual battery/source, harness and motor transient behavior. The repository therefore documents the decision process rather than pretending one universal part selection is correct.
-
-**Evidence boundary.** CAD, simulation and calculations remain explicitly separate from fabricated and measured hardware evidence.
-
-## Repository map
+## Repository Map
 
 ```text
 hardware/
@@ -161,28 +217,40 @@ hardware/
 └── validation/
 
 docs/
-├── ARCHITECTURE.md
 ├── ELECTRICAL_DESIGN.md
 ├── PCB_LAYOUT_RULES.md
 ├── THERMAL_DESIGN.md
+├── MANUFACTURING_RELEASE.md
 ├── FAILURE_MODES.md
-├── BRINGUP.md
 └── VALIDATION_PLAN.md
-
-tools/
-├── design_check.py
-├── current_estimator.py
-├── bom_lint.py
-├── netlist_lint.py
-├── kicad_source_lint.py
-├── generate_report.py
-└── release_gate.py
 ```
 
-## Next proof milestone
+---
 
-The next meaningful milestone is **not another generated document**. It is to complete and record the real CAD review, satisfy the `fab-ready` release gate, fabricate Rev-A, and publish measured electrical/thermal/load evidence from the first article.
+## Current Proof Priority
+
+The next meaningful milestone is not another generated document.
+
+It is:
+
+**complete the real CAD review → satisfy the fab ready gate → fabricate Rev A → assemble the board → publish measured electrical, load, fault, and thermal evidence.**
+
+---
+
+## Release Status
+
+The first tag should remain an **engineering reference release**.
+
+Allowed claims include documented electrical sizing, tolerance aware calculations, KiCad sources, BOM traceability, preliminary manufacturing outputs, automated checks, and a first article validation protocol.
+
+Blocked claims include fab ready, fabricated, hardware validated, measured current limit, thermal performance, stall performance, or safety qualification until those gates actually pass.
+
+[**Release readiness →**](docs/RELEASE_READINESS.md)
+
+---
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE). Independently verify electrical, thermal, manufacturing and safety assumptions before using the design in real hardware.
+MIT. See [`LICENSE`](LICENSE).
+
+Independently verify electrical, thermal, manufacturing, and safety assumptions before using the design in real hardware.
