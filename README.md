@@ -22,6 +22,7 @@
   <a href="docs/PCB_LAYOUT_RULES.md"><strong>PCB Rules</strong></a> ·
   <a href="docs/THERMAL_DESIGN.md"><strong>Thermal</strong></a> ·
   <a href="docs/MANUFACTURING_RELEASE.md"><strong>Manufacturing Gate</strong></a> ·
+  <a href="docs/COMPONENT_SOURCE_AND_PACKAGE_VERIFICATION.md"><strong>Component Sources &amp; Packages</strong></a> ·
   <a href="docs/VALIDATION_PLAN.md"><strong>Validation Plan</strong></a>
 </p>
 
@@ -221,6 +222,7 @@ docs/
 ├── PCB_LAYOUT_RULES.md
 ├── THERMAL_DESIGN.md
 ├── MANUFACTURING_RELEASE.md
+├── COMPONENT_SOURCE_AND_PACKAGE_VERIFICATION.md
 ├── FAILURE_MODES.md
 └── VALIDATION_PLAN.md
 ```
