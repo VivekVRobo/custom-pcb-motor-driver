@@ -173,6 +173,7 @@ Candidate review artifacts include:
 * [Gerber and drill archive](hardware/cad/gerbers_drv8848_revA.zip)
 * [Gerber checksum](hardware/cad/GERBERS_CHECKSUM.sha256)
 * [BOM](hardware/BOM.csv)
+* [BOM component traceability](docs/BOM_COMPONENT_TRACEABILITY.md)
 * [Native KiCad project](hardware/cad/custom_pcb_motor_driver.kicad_pro)
 * [Native schematic](hardware/cad/custom_pcb_motor_driver.kicad_sch)
 * [Native PCB](hardware/cad/custom_pcb_motor_driver.kicad_pcb)
@@ -222,6 +223,7 @@ docs/
 ├── THERMAL_DESIGN.md
 ├── MANUFACTURING_RELEASE.md
 ├── FAILURE_MODES.md
+├── BOM_COMPONENT_TRACEABILITY.md
 └── VALIDATION_PLAN.md
 ```
 
@@ -234,6 +236,8 @@ The next meaningful milestone is not another generated document.
 It is:
 
 **complete the real CAD review → satisfy the fab ready gate → fabricate Rev A → assemble the board → publish measured electrical, load, fault, and thermal evidence.**
+
+The new BOM traceability document supports the CAD-review gate but does **not** advance the board to CAD-ready or fab-ready status.
 
 ---
 
