@@ -1,5 +1,7 @@
 # CAD Validation Checklist — Rev A
 
+**Component source/package traceability:** see [`COMPONENT_SOURCE_TRACEABILITY.md`](COMPONENT_SOURCE_TRACEABILITY.md) for the current BOM-to-manufacturer-source table and explicit unverified-footprint flags.
+
 Use this checklist only against the actual KiCad project. A checked item means the corresponding evidence has been inspected and retained; it is not a planning checkbox.
 
 ## Schematic capture
