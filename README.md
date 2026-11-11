@@ -22,7 +22,8 @@
   <a href="docs/PCB_LAYOUT_RULES.md"><strong>PCB Rules</strong></a> ·
   <a href="docs/THERMAL_DESIGN.md"><strong>Thermal</strong></a> ·
   <a href="docs/MANUFACTURING_RELEASE.md"><strong>Manufacturing Gate</strong></a> ·
-  <a href="docs/VALIDATION_PLAN.md"><strong>Validation Plan</strong></a>
+  <a href="docs/VALIDATION_PLAN.md"><strong>Validation Plan</strong></a> ·
+  <a href="docs/COMPONENT_TRACEABILITY.md"><strong>Component Traceability</strong></a>
 </p>
 
 ---
@@ -173,6 +174,7 @@ Candidate review artifacts include:
 * [Gerber and drill archive](hardware/cad/gerbers_drv8848_revA.zip)
 * [Gerber checksum](hardware/cad/GERBERS_CHECKSUM.sha256)
 * [BOM](hardware/BOM.csv)
+* [Component source and package traceability](docs/COMPONENT_TRACEABILITY.md)
 * [Native KiCad project](hardware/cad/custom_pcb_motor_driver.kicad_pro)
 * [Native schematic](hardware/cad/custom_pcb_motor_driver.kicad_sch)
 * [Native PCB](hardware/cad/custom_pcb_motor_driver.kicad_pcb)
@@ -222,7 +224,8 @@ docs/
 ├── THERMAL_DESIGN.md
 ├── MANUFACTURING_RELEASE.md
 ├── FAILURE_MODES.md
-└── VALIDATION_PLAN.md
+├── VALIDATION_PLAN.md
+└── COMPONENT_TRACEABILITY.md
 ```
 
 ---
