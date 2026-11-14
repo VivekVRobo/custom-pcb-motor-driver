@@ -30,7 +30,7 @@ def _expand_references(reference):
 
 
 def _normalize_markdown_cell(value):
-    return value.strip().strip(`).strip()
+    return value.strip().strip("`").strip()
 
 
 def test_traceability_references_match_bom():
