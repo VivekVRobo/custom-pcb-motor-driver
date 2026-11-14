@@ -29,11 +29,17 @@ def _expand_references(reference):
     return [reference]
 
 
+def _normalize_markdown_cell(value):
+    return value.strip().strip(`).strip()
+
+
 def test_traceability_references_match_bom():
     bom = _bom_by_reference()
     traceability = _traceability_rows()
 
+
     assert traceability, "traceability table must contain at least one component row"
+
 
     for row in traceability:
         reference, _, manufacturer, mpn, *_ = row
@@ -42,4 +48,6 @@ def test_traceability_references_match_bom():
             assert bom[ref]["Manufacturer"] == manufacturer, (
                 f"{ref}: manufacturer differs between traceability and BOM"
             )
-            assert bom[ref]["MPN"] == mpn, f"{ref}: MPN differs between traceability and BOM"
+            assert bom[ref]["MPN"] == _normalize_markdown_cell(mpn), (
+                f"{ref}: MPN differs between traceability and BOM"
+            )
