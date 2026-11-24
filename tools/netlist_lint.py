@@ -22,9 +22,14 @@ def lint(path: Path) -> list[str]:
     if not isinstance(data, dict):
         return ["contract root must be a mapping"]
 
+    components = data.get("components", {})
+    if not isinstance(components, dict):
+        errors.append("components must be a mapping")
+        components = {}
+
     nets = data.get("nets", {})
     if not isinstance(nets, dict):
-        return ["nets must be a mapping"]
+        return errors + ["nets must be a mapping"]
 
     missing = REQUIRED_NETS - set(nets)
     if missing:
@@ -45,6 +50,12 @@ def lint(path: Path) -> list[str]:
             if not isinstance(endpoint, str) or "." not in endpoint:
                 errors.append(f"{net}: invalid endpoint {endpoint!r}")
                 continue
+            component, pin = endpoint.split(".", 1)
+            if not component or not pin:
+                errors.append(f"{net}: invalid endpoint {endpoint!r}")
+                continue
+            if component not in components:
+                errors.append(f"{net}: endpoint {endpoint!r} references undeclared component {component!r}")
             previous = endpoint_owner.get(endpoint)
             if previous is not None and previous != net:
                 errors.append(f"{endpoint}: assigned to both {previous} and {net}")
