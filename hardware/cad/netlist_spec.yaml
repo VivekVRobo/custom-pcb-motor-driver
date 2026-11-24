@@ -8,6 +8,10 @@ components:
   C_VM_LOCAL: 22uF_25V_X7R
   C_VINT: 2.2uF_6.3V_or_higher_X7R
   R_NFAULT: 10kohm
+  J1: 1935161_PhoenixContact_power
+  J2: 1935161_PhoenixContact_motor_A
+  J3: 1935161_PhoenixContact_motor_B
+  J4: 61300911121_Wurth_logic_header
 nets:
   VM: {endpoints: [J1.VM, U1.VM, C_VM_HF.1, C_VM_LOCAL.1]}
   GND: {endpoints: [J1.GND, U1.GND, U1.PPAD, C_VM_HF.2, C_VM_LOCAL.2, C_VINT.2, R_SENSE_A.2, R_SENSE_B.2, J4.GND]}
